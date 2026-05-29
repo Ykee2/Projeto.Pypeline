@@ -1,0 +1,12 @@
+name: "CodeQL Config - Análise de Segurança Python"
+
+queries:
+  - uses: security-extended
+  - uses: security-and-quality
+
+paths-ignore:
+  - venv
+  - node_modules
+  - '**/_pycache_'
+  - '*/.test.py'
+  

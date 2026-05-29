@@ -1,0 +1,90 @@
+name: CI/CD Pipeline com CodeQL
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  codeql-analysis:
+    name: '🔒 Análise CodeQL'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências
+        run: |
+          pip install -r requirements.txt
+
+      - name: Inicializar CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+          config-file: ./.github/codeql-config.yml
+
+      - name: Executar análise CodeQL
+        uses: github/codeql-action/analyze@v3
+
+  tests:
+    name: '🧪 Testes Automatizados'
+    runs-on: ubuntu-latest
+    needs: codeql-analysis
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências
+        run: |
+          pip install -r requirements.txt
+          pip install pytest flake8
+
+      - name: Executar testes
+        run: pytest tests/ -v
+
+      - name: Verificar qualidade do código
+        run: flake8 . --max-line-length=120 --exclude=venv
+
+  deploy-stage:
+    name: '🚀 Deploy para Stage'
+    runs-on: ubuntu-latest
+    needs: [codeql-analysis, tests]
+    environment: stage
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Simular deploy para Stage
+        run: |
+          echo '✅ Deploy para Stage iniciado'
+          echo 'Versão: ${{ github.sha }}'
+          echo 'Branch: ${{ github.ref_name }}'
+          echo '🚀 Aplicação disponível em stage!'
+          
