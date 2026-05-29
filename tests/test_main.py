@@ -19,5 +19,5 @@ class TestCalcularMedia:
 
     def test_lista_vazia(self):
         with pytest.raises(ValueError):
-            calcular_media([]) 
-            
+            calcular_media([])
+
