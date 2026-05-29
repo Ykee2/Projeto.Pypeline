@@ -13,3 +13,11 @@ def calcular_media(notas: list) -> float:
 if __name__ == "__main__":
     print(saudacao("Aluno FATEC"))
     print(f"Media: {calcular_media([8.5, 9.0, 7.5])}")
+import sqlite3
+
+
+def buscar_usuario_vulneravel(user_id):
+    conn = sqlite3.connect('banco.db')
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT * FROM users WHERE id={user_id}")
+    return cursor.fetchone()
